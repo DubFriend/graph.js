@@ -1,0 +1,26 @@
+{
+  "name": "graph.js",
+  "version": "0.0.0",
+  "description": "graph utilities",
+  "main": "graph.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DubFriend/graph.js.git"
+  },
+  "keywords": [
+    "graph",
+    "utility",
+    "tree",
+    "cycle",
+    "search"
+  ],
+  "author": "Brian Detering <BDeterin@gmail.com> (http://www.briandetering.net/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DubFriend/graph.js/issues"
+  },
+  "homepage": "https://github.com/DubFriend/graph.js"
+}
