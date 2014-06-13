@@ -7,7 +7,9 @@
 
 		var mapNode = function (node) {
 			var mapLink = function (link) {
-				return _.isObject(link) ? link : { id: link, weight: undefined };
+				return _.isObject(link) ? link : {
+					id: link, weight: undefined
+				};
 			};
 
 			return {
@@ -20,10 +22,6 @@
 			};
 		};
 
-		// var isIDInPreLinks = function (preLinks, id) {
-		// 	return _.indexOf(_.pluck(preLinks, 'id'), id) !== -1;
-		// };
-
 		var getPreLinkByID = function (preLinks, id) {
 			var index = _.indexOf(_.pluck(preLinks, 'id'), id);
 			return index === -1 ? null : preLinks[index];
@@ -33,11 +31,13 @@
 
 		var graph = list.shift();
 
-		var referenceList = [graph];
+
+		var referenceDictionary = {};
+		referenceDictionary[graph.id] = graph;
 
 		_.each(list || [], function (node) {
 
-			_.each(referenceList, function (reference) {
+			_.each(referenceDictionary, function (reference) {
 				var link = getPreLinkByID(reference.preLinks, node.id);
 				if(link) {
 					reference.links.push({
@@ -55,23 +55,23 @@
 				}
 			});
 
-			referenceList.push(node);
+			referenceDictionary[node.id] = node;
 		});
 
-		_.each(referenceList, function (reference) {
+		_.each(referenceDictionary, function (reference) {
 			delete reference.preLinks;
 		});
 
 		return {
 			graph: graph,
-			referenceList: referenceList
+			referenceDictionary: referenceDictionary
 		};
 	};
 
 	var GraphJS = function (list) {
 		var results = mapListToGraph(list);
 		this.graph = results.graph;
-		this.referenceList = results.referenceList;
+		this.referenceDictionary = results.referenceDictionary;
 	};
 
 	if(module && module.exports) {
@@ -81,6 +81,36 @@
 	else {
 		this.GraphJS = GraphJS;
 	}
+
+	GraphJS.prototype.depthFirstSearch = function (isMatch) {
+		var depthFirstRecurse = function (node, id) {
+			node.discovered = true;
+
+			// if(node.id === id) {
+			if(isMatch(node)) {
+				return node;
+			}
+
+			return _.reduce(node.links, function (acc, link) {
+				if(!link.ref.discovered) {
+					return acc || depthFirstRecurse(link.ref, isMatch);
+				}
+				return acc || null;
+			}, null);
+		};
+
+		var results = depthFirstRecurse(this.graph, isMatch);
+
+		_.each(this.referenceDictionary, function (reference) {
+			delete reference.discovered;
+		});
+
+		return results;
+	};
+
+	GraphJS.prototype.find = function (id) {
+		return this.referenceDictionary[id] || null;
+	};
 
 	GraphJS.prototype.hasCycles = function () {
 
