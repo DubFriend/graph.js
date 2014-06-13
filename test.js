@@ -80,11 +80,11 @@ exports.depthFirstSearch = function (test) {
 	test.done();
 };
 
-exports.find = function (test) {
-	test.strictEqual(this.graph.find(1).data, 'a');
-	test.strictEqual(this.graph.find(2).data, 'b');
-	test.strictEqual(this.graph.find('3').data, 'c');
-	test.strictEqual(this.graph.find(3).data, 'c');
-	test.strictEqual(this.graph.find(4), null);
+exports.get = function (test) {
+	test.strictEqual(this.graph.get(1).data, 'a');
+	test.strictEqual(this.graph.get(2).data, 'b');
+	test.strictEqual(this.graph.get('3').data, 'c');
+	test.strictEqual(this.graph.get(3).data, 'c');
+	test.strictEqual(this.graph.get(4), null);
 	test.done();
 };

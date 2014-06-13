@@ -86,7 +86,6 @@
 		var depthFirstRecurse = function (node, id) {
 			node.discovered = true;
 
-			// if(node.id === id) {
 			if(isMatch(node)) {
 				return node;
 			}
@@ -108,7 +107,7 @@
 		return results;
 	};
 
-	GraphJS.prototype.find = function (id) {
+	GraphJS.prototype.get = function (id) {
 		return this.referenceDictionary[id] || null;
 	};
 
