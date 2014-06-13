@@ -22,5 +22,13 @@
   "bugs": {
     "url": "https://github.com/DubFriend/graph.js/issues"
   },
-  "homepage": "https://github.com/DubFriend/graph.js"
+  "homepage": "https://github.com/DubFriend/graph.js",
+  "dependencies": {
+    "underscore": "^1.6.0"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-nodeunit": "^0.4.0",
+    "grunt-contrib-watch": "^0.6.1"
+  }
 }
