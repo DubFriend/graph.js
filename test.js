@@ -3,9 +3,10 @@ var _ = require('underscore');
 
 exports.setUp = function (done) {
 	this.graph = new GraphJS([
-		{ id: 1, data: 'a', link: 2 },
+		{ id: 1, data: 'a', link: [2, 4] },
 		{ id: 2, data: 'b', link: [1, { id: 3, weight: 5 }] },
-		{ id: 3, data: 'c', link: 1 }
+		{ id: 3, data: 'c', link: 1 },
+		{ id: 4, data: 'd' }
 	]);
 	done();
 };
@@ -23,7 +24,7 @@ exports.construction = function (test) {
 
 	test.strictEqual(
 		this.graph.graph.links[0].ref.links[1].ref.data,
-		'c', 'a.b.a.c'
+		'c', 'a.b.c'
 	);
 
 	test.strictEqual(
@@ -37,9 +38,8 @@ exports.construction = function (test) {
 	);
 
 	test.deepEqual(
-		// _.pluck(this.graph.referenceList, 'data'),
 		Object.keys(this.graph.referenceDictionary),
-		['1', '2', '3'],
+		['1', '2', '3', '4'],
 		'referenceList has elements'
 	);
 
@@ -63,28 +63,40 @@ exports.construction = function (test) {
 exports.depthFirstSearch = function (test) {
 	test.strictEqual(this.graph.depthFirstSearch(function (node) {
 		return node.data === 'a';
-	}).data, 'a');
+	}).data, 'a', 'found a');
+
+	// test twice to test idempotence
+	test.strictEqual(this.graph.depthFirstSearch(function (node) {
+		return node.data === 'a';
+	}).data, 'a', 'found a again');
 
 	test.strictEqual(this.graph.depthFirstSearch(function (node) {
 		return node.data === 'b';
-	}).data, 'b');
+	}).data, 'b', 'found b');
 
 	test.strictEqual(this.graph.depthFirstSearch(function (node) {
 		return node.data === 'c';
-	}).data, 'c');
+	}).data, 'c', 'found c');
 
 	test.strictEqual(this.graph.depthFirstSearch(function (node) {
 		return node.data === 'wrong';
-	}), null);
+	}), null, 'returns null if no match');
 
 	test.done();
 };
 
 exports.get = function (test) {
-	test.strictEqual(this.graph.get(1).data, 'a');
-	test.strictEqual(this.graph.get(2).data, 'b');
-	test.strictEqual(this.graph.get('3').data, 'c');
-	test.strictEqual(this.graph.get(3).data, 'c');
-	test.strictEqual(this.graph.get(4), null);
+	test.strictEqual(this.graph.get(1).data, 'a', 'found 1');
+	test.strictEqual(this.graph.get(2).data, 'b', 'found 2');
+	test.strictEqual(this.graph.get('3').data, 'c', 'found 3 (string)');
+	test.strictEqual(this.graph.get(3).data, 'c', 'found 3');
+	test.strictEqual(this.graph.get(1234), null, 'returns null if no match');
+	test.done();
+};
+
+exports.getStronglyConnectedComponents = function (test) {
+	test.deepEqual(this.graph.getStronglyConnectedComponents(), [[4], [3, 2, 1]]);
+	// testing twice to ensure idempotence
+	test.deepEqual(this.graph.getStronglyConnectedComponents(), [[4], [3, 2, 1]]);
 	test.done();
 };

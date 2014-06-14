@@ -82,8 +82,9 @@
 		this.GraphJS = GraphJS;
 	}
 
-	GraphJS.prototype.depthFirstSearch = function (isMatch) {
-		var depthFirstRecurse = function (node, id) {
+	GraphJS.prototype.depthFirstSearch = function (isMatch, allreadyVisited) {
+		allreadyVisited = allreadyVisited || function () {};
+		var depthFirstRecurse = function (node) {
 			node.discovered = true;
 
 			if(isMatch(node)) {
@@ -93,6 +94,9 @@
 			return _.reduce(node.links, function (acc, link) {
 				if(!link.ref.discovered) {
 					return acc || depthFirstRecurse(link.ref, isMatch);
+				}
+				else {
+					allreadyVisited(node);
 				}
 				return acc || null;
 			}, null);
@@ -109,6 +113,53 @@
 
 	GraphJS.prototype.get = function (id) {
 		return this.referenceDictionary[id] || null;
+	};
+
+	GraphJS.prototype.getStronglyConnectedComponents = function () {
+		var index = 0;
+		var components = [];
+		var stack = [];
+
+		var strongConnect = function (node) {
+			var tempComponentNode;
+			var component = [];
+
+			node.index = index;
+			node.lowLink = index;
+			index += 1;
+			stack.push(node);
+
+			_.each(node.links, function (link) {
+				if(link.ref.index === undefined) {
+					strongConnect(link.ref);
+					node.lowLink = Math.min(node.lowLink, link.ref.lowLink);
+				}
+				else if(_.indexOf(_.pluck(stack, 'id'), link.ref.id) !== -1) {
+					node.lowLink = Math.min(node.lowLink, link.ref.lowLink);
+				}
+			});
+
+			if(node.lowLink === node.index) {
+				do {
+					tempComponentNode = stack.pop();
+					component.push(tempComponentNode.id);
+				} while(node.id !== tempComponentNode.id);
+				components.push(component);
+			}
+		};
+
+		_.each(this.referenceDictionary, function (node) {
+			if(node.index === undefined) {
+				strongConnect(node);
+			}
+		});
+
+		_.each(this.referenceDictionary, function (node) {
+			delete node.index;
+			delete node.lowLink;
+		});
+
+		return components;
 	};
 
 	GraphJS.prototype.hasCycles = function () {

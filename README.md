@@ -14,13 +14,13 @@ var graph = new GraphJS([
 ###get
 returns reference to node with the given id.
 ```javascript
-graph.get(1);
+var node = graph.get(1);
 ```
 
 ###depthFirstSearch
 returns reference to first node satisfying the callback
 ```javascript
-graph.depthFirstSearch(function (node) {
+var node = graph.depthFirstSearch(function (node) {
 	return node.data === 'a';
 });
 ```
