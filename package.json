@@ -1,5 +1,5 @@
 {
-  "name": "graph.js",
+  "name": "mathgraph",
   "version": "0.0.0",
   "description": "graph utilities",
   "main": "graph.js",

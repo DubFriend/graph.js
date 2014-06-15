@@ -1,6 +1,7 @@
 #GraphJS
 
 Create a new directed graph from a list
+
 ```javascript
 var graph = new GraphJS([
     { id: 1, data: 'a', link: 2 },
