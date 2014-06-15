@@ -100,3 +100,32 @@ exports.getStronglyConnectedComponents = function (test) {
 	test.deepEqual(this.graph.getStronglyConnectedComponents(), [[4], [3, 2, 1]]);
 	test.done();
 };
+
+exports.hasCycles = function (test) {
+	test.strictEqual(this.graph.hasCycles(), true);
+	// testing idempotence
+	test.strictEqual(this.graph.hasCycles(), true);
+	test.strictEqual(new GraphJS([
+		{ id: 1, data: 'a', link: 2 },
+		{ id: 2, data: 'b' }
+	]).hasCycles(), false);
+	test.done();
+};
+
+exports.isTree = function (test) {
+	test.strictEqual(this.graph.isTree(), false, 'test 1');
+	// testing idempotence.
+	test.strictEqual(this.graph.isTree(), false, 'test 1.a');
+	test.strictEqual(new GraphJS([
+		{ id: 1, data: 'a', link: [2, 3] },
+		{ id: 2, data: 'b', link: 4 },
+		{ id: 3, data: 'c' },
+		{ id: 4, data: 'd' }
+	]).isTree(), true, 'test 2');
+	test.strictEqual(new GraphJS([
+		{ id: 1, data: 'a', link: [2, 3] },
+		{ id: 2, data: 'b', link: 3 },
+		{ id: 3, data: 'c' }
+	]).isTree(), false, 'test 3');
+	test.done();
+};

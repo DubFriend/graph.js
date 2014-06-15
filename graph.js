@@ -82,28 +82,28 @@
 		this.GraphJS = GraphJS;
 	}
 
-	GraphJS.prototype.depthFirstSearch = function (isMatch, allreadyVisited) {
+	var depthFirstSearch = function (node, isMatch, allreadyVisited) {
 		allreadyVisited = allreadyVisited || function () {};
-		var depthFirstRecurse = function (node) {
-			node.discovered = true;
+		node.discovered = true;
+		if(isMatch(node)) {
+			return node;
+		}
 
-			if(isMatch(node)) {
-				return node;
+		return _.reduce(node.links, function (acc, link) {
+			if(!link.ref.discovered) {
+				return acc || depthFirstSearch(link.ref, isMatch, allreadyVisited);
 			}
+			else {
+				allreadyVisited(node);
+			}
+			return acc || null;
+		}, null);
+	};
 
-			return _.reduce(node.links, function (acc, link) {
-				if(!link.ref.discovered) {
-					return acc || depthFirstRecurse(link.ref, isMatch);
-				}
-				else {
-					allreadyVisited(node);
-				}
-				return acc || null;
-			}, null);
-		};
+	GraphJS.prototype.depthFirstSearch = function (isMatch, allreadyVisited) {
+		var results = depthFirstSearch(this.graph, isMatch, allreadyVisited);
 
-		var results = depthFirstRecurse(this.graph, isMatch);
-
+		// cleanup
 		_.each(this.referenceDictionary, function (reference) {
 			delete reference.discovered;
 		});
@@ -115,6 +115,7 @@
 		return this.referenceDictionary[id] || null;
 	};
 
+	// http://en.wikipedia.org/wiki/Tarjan's_strongly_connected_components_algorithm
 	GraphJS.prototype.getStronglyConnectedComponents = function () {
 		var index = 0;
 		var components = [];
@@ -154,6 +155,7 @@
 			}
 		});
 
+		// cleanup
 		_.each(this.referenceDictionary, function (node) {
 			delete node.index;
 			delete node.lowLink;
@@ -163,7 +165,40 @@
 	};
 
 	GraphJS.prototype.hasCycles = function () {
+		return _.filter(this.getStronglyConnectedComponents(), function(comp) {
+			return comp.length > 1;
+		}).length > 0 ? true : false;
+	};
 
+	GraphJS.prototype.isForest = function () {
+		var numberOfVertices = Object.keys(this.referenceDictionary).length;
+
+		var numberOfEdges = _.reduce(
+			this.referenceDictionary,
+			function (acc, node) {
+				return acc + node.links.length;
+			},
+			0
+		);
+
+		return numberOfEdges === numberOfVertices - 1 && !this.hasCycles();
+	};
+
+	GraphJS.prototype.isConnected = function () {
+		var isConnected = true;
+		depthFirstSearch(this.graph, function () { return false; });
+		_.each(this.referenceDictionary, function (node) {
+			if(!node.discovered) {
+				isConnected = false;
+			}
+			// cleanup
+			delete node.discovered;
+		});
+		return isConnected;
+	};
+
+	GraphJS.prototype.isTree = function () {
+		return this.isForest() && this.isConnected();
 	};
 
 }).call(this);
