@@ -1,7 +1,13 @@
 #GraphJS
 
+nodejs
 `npm install mathgraph`
-`<script src="path/to/graph.js"></script>`
+
+browser
+```html
+<script src="path/to/underscore.js"></script>
+<script src="path/to/graph.js"></script>
+```
 
 Create a new directed graph from a list
 

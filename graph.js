@@ -1,3 +1,5 @@
+// graph.js
+// https://github.com/DubFriend/graph.js
 (function () {
 	'use strict';
 
@@ -74,7 +76,7 @@
 		this.referenceDictionary = results.referenceDictionary;
 	};
 
-	if(module && module.exports) {
+	if(typeof exports !== 'undefined') {
 		module.exports = GraphJS;
 		_ = require('underscore');
 	}
