@@ -3,7 +3,7 @@
 (function () {
 	'use strict';
 
-	var _ = _;
+	var _;
 
 	var mapListToGraph = function (list) {
 
@@ -82,6 +82,7 @@
 	}
 	else {
 		this.GraphJS = GraphJS;
+		_ = window._;
 	}
 
 	var depthFirstSearch = function (node, isMatch, allreadyVisited) {
