@@ -174,17 +174,26 @@
 	};
 
 	GraphJS.prototype.isForest = function () {
-		var numberOfVertices = Object.keys(this.referenceDictionary).length;
+		var isForest = true;
 
-		var numberOfEdges = _.reduce(
-			this.referenceDictionary,
-			function (acc, node) {
-				return acc + node.links.length;
-			},
-			0
-		);
+		_.each(this.referenceDictionary, function (node) {
+			if(!node.discovered) {
+				depthFirstSearch(
+					node,
+					function () { return false; },
+					function () {
+						isForest = false;
+					}
+				);
+			}
+		});
 
-		return numberOfEdges === numberOfVertices - 1 && !this.hasCycles();
+		// cleanup
+		_.each(this.referenceDictionary, function (node) {
+			delete node.discovered;
+		});
+
+		return isForest;
 	};
 
 	GraphJS.prototype.isConnected = function () {
@@ -201,7 +210,21 @@
 	};
 
 	GraphJS.prototype.isTree = function () {
-		return this.isForest() && this.isConnected();
+
+		var numberOfVertices = Object.keys(this.referenceDictionary).length;
+
+		var numberOfEdges = _.reduce(
+			this.referenceDictionary,
+			function (acc, node) {
+				return acc + node.links.length;
+			},
+			0
+		);
+
+		return numberOfEdges === numberOfVertices - 1 &&
+			   !this.hasCycles() && this.isConnected();
+
+		// return this.isForest() && this.isConnected();
 	};
 
 }).call(this);

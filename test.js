@@ -112,6 +112,40 @@ exports.hasCycles = function (test) {
 	test.done();
 };
 
+exports.isConnected = function (test) {
+	test.strictEqual(this.graph.isConnected(), true, 'test true');
+	test.strictEqual(this.graph.isConnected(), true, 'test true idempotence');
+	test.strictEqual(new GraphJS([
+		{ id: 1, data: 'a', link: 2 },
+		{ id: 2, data: 'b' },
+		{ id: 3, data: 'c' }
+	]).isConnected(), false, 'test false without cycles');
+
+	test.done();
+};
+
+exports.isForest = function (test) {
+	test.strictEqual(this.graph.isForest(), false, 'test false has cycles');
+
+	test.strictEqual(new GraphJS([
+		{ id: 1, data: 'a', link: [2, 3] },
+		{ id: 2, data: 'b', link: 4 },
+		{ id: 3, data: 'c' },
+		{ id: 4, data: 'd' }
+	]).isForest(), true, 'test true connected');
+
+	test.strictEqual(new GraphJS([
+		{ id: 1, data: 'a', link: [2, 3] },
+		{ id: 2, data: 'b', link: 4 },
+		{ id: 3, data: 'c' },
+		{ id: 4, data: 'd' },
+		{ id: 5, data: 'e' }
+	]).isForest(), true, 'test true disconnected');
+
+	test.done();
+};
+
+
 exports.isTree = function (test) {
 	test.strictEqual(this.graph.isTree(), false, 'test 1');
 	// testing idempotence.
