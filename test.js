@@ -114,25 +114,25 @@ exports.hasCycles = function (test) {
 
 exports.isConnected = function (test) {
 	test.strictEqual(this.graph.isConnected(), true, 'test true');
-	test.strictEqual(this.graph.isConnected(), true, 'test true idempotence');
+	test.strictEqual(this.graph.isConnected(), true, 'test true: idempotence');
 	test.strictEqual(new GraphJS([
 		{ id: 1, data: 'a', link: 2 },
 		{ id: 2, data: 'b' },
 		{ id: 3, data: 'c' }
-	]).isConnected(), false, 'test false without cycles');
+	]).isConnected(), false, 'test false: without cycles');
 
 	test.done();
 };
 
 exports.isForest = function (test) {
-	test.strictEqual(this.graph.isForest(), false, 'test false has cycles');
+	test.strictEqual(this.graph.isForest(), false, 'test false: has cycles');
 
 	test.strictEqual(new GraphJS([
 		{ id: 1, data: 'a', link: [2, 3] },
 		{ id: 2, data: 'b', link: 4 },
 		{ id: 3, data: 'c' },
 		{ id: 4, data: 'd' }
-	]).isForest(), true, 'test true connected');
+	]).isForest(), true, 'test true: connected');
 
 	test.strictEqual(new GraphJS([
 		{ id: 1, data: 'a', link: [2, 3] },
@@ -140,7 +140,14 @@ exports.isForest = function (test) {
 		{ id: 3, data: 'c' },
 		{ id: 4, data: 'd' },
 		{ id: 5, data: 'e' }
-	]).isForest(), true, 'test true disconnected');
+	]).isForest(), true, 'test true: disconnected');
+
+	test.strictEqual(new GraphJS([
+		{ id: 1, data: 'a', link: [2, 3] },
+		{ id: 2, data: 'b', link: 4 },
+		{ id: 3, data: 'c', link: 4 },
+		{ id: 4, data: 'd' }
+	]).isForest(), false, 'test false: diamond shaped');
 
 	test.done();
 };
@@ -149,17 +156,28 @@ exports.isForest = function (test) {
 exports.isTree = function (test) {
 	test.strictEqual(this.graph.isTree(), false, 'test 1');
 	// testing idempotence.
+
 	test.strictEqual(this.graph.isTree(), false, 'test 1.a');
+
 	test.strictEqual(new GraphJS([
 		{ id: 1, data: 'a', link: [2, 3] },
 		{ id: 2, data: 'b', link: 4 },
 		{ id: 3, data: 'c' },
 		{ id: 4, data: 'd' }
 	]).isTree(), true, 'test 2');
+
 	test.strictEqual(new GraphJS([
 		{ id: 1, data: 'a', link: [2, 3] },
 		{ id: 2, data: 'b', link: 3 },
 		{ id: 3, data: 'c' }
 	]).isTree(), false, 'test 3');
+
+	test.strictEqual(new GraphJS([
+		{ id: 1, data: 'a', link: [2, 3] },
+		{ id: 2, data: 'b', link: 4 },
+		{ id: 3, data: 'c', link: 4 },
+		{ id: 4, data: 'd' }
+	]).isForest(), false, 'test false: diamond shaped');
+
 	test.done();
 };

@@ -210,21 +210,7 @@
 	};
 
 	GraphJS.prototype.isTree = function () {
-
-		var numberOfVertices = Object.keys(this.referenceDictionary).length;
-
-		var numberOfEdges = _.reduce(
-			this.referenceDictionary,
-			function (acc, node) {
-				return acc + node.links.length;
-			},
-			0
-		);
-
-		return numberOfEdges === numberOfVertices - 1 &&
-			   !this.hasCycles() && this.isConnected();
-
-		// return this.isForest() && this.isConnected();
+		return this.isForest() && this.isConnected();
 	};
 
 }).call(this);
