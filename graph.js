@@ -174,26 +174,26 @@
 	};
 
 	GraphJS.prototype.isForest = function () {
-		var isForest = true;
 
+		var hasMultipleParents = false;
+
+		var numberOflinksToNodes = {};
 		_.each(this.referenceDictionary, function (node) {
-			if(!node.discovered) {
-				depthFirstSearch(
-					node,
-					function () { return false; },
-					function () {
-						isForest = false;
-					}
-				);
+			_.each(node.links, function (link) {
+				if(!numberOflinksToNodes[link.ref.id]) {
+					numberOflinksToNodes[link.ref.id] = 0;
+				}
+				numberOflinksToNodes[link.ref.id] += 1;
+			});
+		});
+
+		_.each(numberOflinksToNodes, function (count) {
+			if(count > 1) {
+				hasMultipleParents = true;
 			}
 		});
 
-		// cleanup
-		_.each(this.referenceDictionary, function (node) {
-			delete node.discovered;
-		});
-
-		return isForest;
+		return !hasMultipleParents && !this.hasCycles();
 	};
 
 	GraphJS.prototype.isConnected = function () {

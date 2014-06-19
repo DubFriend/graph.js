@@ -149,6 +149,11 @@ exports.isForest = function (test) {
 		{ id: 4, data: 'd' }
 	]).isForest(), false, 'test false: diamond shaped');
 
+	test.strictEqual(new GraphJS([
+		{ id: 1, data: 'a' },
+		{ id: 2, data: 'b', link: 1 }
+	]).isForest(), true, 'mixed up order (in response to a bug)');
+
 	test.done();
 };
 
