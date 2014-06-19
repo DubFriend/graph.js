@@ -14,6 +14,7 @@
 				};
 			};
 
+
 			return {
 				id: node.id,
 				data: node.data,
@@ -31,14 +32,12 @@
 
 		list = _.map(list, mapNode);
 
-		var graph = list.shift();
-
+		var graph = list[0];
 
 		var referenceDictionary = {};
 		referenceDictionary[graph.id] = graph;
 
 		_.each(list || [], function (node) {
-
 			_.each(referenceDictionary, function (reference) {
 				var link = getPreLinkByID(reference.preLinks, node.id);
 				if(link) {
@@ -168,9 +167,22 @@
 	};
 
 	GraphJS.prototype.hasCycles = function () {
-		return _.filter(this.getStronglyConnectedComponents(), function(comp) {
-			return comp.length > 1;
-		}).length > 0 ? true : false;
+		var hasLinksToSelf = _.reduce(
+			this.referenceDictionary,
+			function (hasSelfLink, node) {
+				return hasSelfLink || _.indexOf(_.pluck(_.pluck(
+					node.links, 'ref'
+				), 'id'), node.id) !== -1;
+			},
+			false
+		);
+
+		return hasLinksToSelf || _.filter(
+			this.getStronglyConnectedComponents(),
+			function(comp) {
+				return comp.length > 1;
+			}
+		).length > 0;
 	};
 
 	GraphJS.prototype.isForest = function () {

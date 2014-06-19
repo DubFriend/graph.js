@@ -154,6 +154,10 @@ exports.isForest = function (test) {
 		{ id: 2, data: 'b', link: 1 }
 	]).isForest(), true, 'mixed up order (in response to a bug)');
 
+	test.strictEqual(new GraphJS([
+		{ id: 1, data: 'a', link: 1 }
+	]).isForest(), false, 'link to self');
+
 	test.done();
 };
 
